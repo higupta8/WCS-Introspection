@@ -1,0 +1,5 @@
+Category metric_category
+BankSubsidiaryMetric metric_currency
+Education degree
+FundingRound round_date_quarter
+IPOEvent ipo_status

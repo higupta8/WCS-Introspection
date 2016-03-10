@@ -1,0 +1,3 @@
+FundingRound amount Double
+InstitutionalInvestment amount Double
+Acquisition acquisition_price Double

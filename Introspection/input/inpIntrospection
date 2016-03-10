@@ -1,0 +1,4 @@
+Ontology_FindHistogramForProperty /datastore/common/higupta8/Introspection/input/inpHistogram
+Ontology_FindHistogramForPropertyPair /datastore/common/higupta8/Introspection/input/inpHistogramPair
+Ontology_FindStatsForNumericAttributes /datastore/common/higupta8/Introspection/input/inpBasicStats
+Ontology_FindRowCounts /datastore/common/higupta8/Introspection/input/inpRowCounts

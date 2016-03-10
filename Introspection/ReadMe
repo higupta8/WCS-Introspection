@@ -1,0 +1,102 @@
+1. Introspection Module
+
+The module is at /datastore/common/higupta8/fssflow/Introspection/ on tatzia cluster.    There are four files/directories here.
+
+a) monitoring :  This contains the source scala files. The source scala files are at /datastore/common/higupta8/Introspection/monitoring/src/main/scala. The jar containing the classes for these scala files are located at monitoring/target/scala-2.10/monitoring_queries.jar
+b) scripts : This contains some shell scripts to run the introspection capability.
+c) input : This contains some sample input configuration files for different queries as well as for the introspection module.
+d) output : This contains the sample output for the monitoring queries which we ran on the onto_shred_2.4.1 data.
+
+2.  Ontology Driven Queries
+
+There are four ontology driven queries which are there in the jar -- 
+
+a) Computing the histogram for a set of (string type) properties, The output is sorted on the count so that outliers can be picked easily
+b) Computing the joint histogram for a set of (string type) property pairs,  The output is sorted on the count.
+c) Computing the row-counts for a set of concept tables,
+d) Computing some basic statistics for a set of numeric attributes (min. max, mean, top-10 elements)
+
+The scala classes for these 4 queries are
+
+Ontology_FindHistogramForProperty
+Ontology_FindHistogramForPropertyPair
+Ontology_FindRowCounts
+Ontology_FindStatsForNumericAttributes
+
+3. Running Introspection
+
+The introspection module can be run as follows
+
+cd scripts
+ ./runIntrospection.sh  input-hdfs-path  output-path-on-local-file-system  introspection-input-file-path
+
+input-hdfs-path -- hdfs directory at which input data is kept. 
+output-path-on-local-file-system -- directory on local file system where the output of monitoring queries goes
+introspection-input-file-path -- The file containing introspection input
+
+A sample command is
+
+./runIntrospection.sh  introspection/onto_shred_2.4.1      /datastore/common/higupta8/fssflow/introspection/output/out     /datastore/common/higupta8/fssflow/introspection/input/inpIntrospection
+
+4. Input HDFS data
+
+The input data is at /user/higupta8/introspection/onto_shred_2.4.1 .   Please note that the directories should only contain the data files and not files like _SUCCESS/_logs
+
+5. scripts
+
+This directory contain the following three main scripts.
+
+a) mergeAllFiles.sh -- This merges all the part files (for all tables) from a location and puts the merged data at an output directory. An example usage is 
+ 	./mergeAllFiles.sh /user/mahernan/onto_shred_2.4.1   /user/higupta8/introspection/onto_shred_2.4.1
+
+
+b) introspection_header.sh -- This specifies Spark home, Spark master, Biginsights home, path to the monitoring queries jar etc.  These should be set before introspection is run.
+
+c) runIntrospection.sh -- This runs the introspection capability (point 3)
+
+6. Introspection Input
+
+We need to specify (a) which queries we want to run as part of introspection and (b) for each query -- for which concepts / properties / concept-property pairs etc we want to run this query. This is specified using a file.
+
+Each line in this file contains (a) scala class for the query which we want to run and (b) the file outlining input configuration for the query
+
+A sample input file is at input/inpIntrospection. First line in this file is 
+
+Ontology_FindHistogramForProperty /datastore/common/higupta8/Introspection/input/inpHistogram
+
+This signifies that introspection should run histogram query and the input configuration for this query is in file input/inpHistogram
+
+in input/inpIntrospection file , there are four lines -- one line each for the four queries and their corresponding input configuration files.
+
+7. Input Configuration For each query
+
+a) Histogram -- Each line in the file specifies a <concept, property> pair for which we want to compute a histogram. A sample file is input/inpHistogram. 
+                               The first line here is "Category metric_category"
+
+	               This specifies that we want to compute the histogram for the property "metric_category" in the concept "Category". Please note that the actual table name is "Category_table.json". We only specify the concept name here (and not the relational table name).
+
+		Overall, there are five lines here therefore five histograms will be generated.
+
+b) HistogramForPropertyPair -- Each line specifies a concept and the two properties for which we want to compute a joint histogram. A sample file is input/inpHistogramPair
+
+c) RowCount -- Each line specifies a concept for which we want to compute the row-count . A sample file is input/inpRowCounts
+
+d) BasicStatistics -- Each line specifies a concept, a numeric attribute and its type (long/float/double) for which we wish to compute some basic statistics. A sample file in input/inpBasicStats
+
+8. Output
+
+The monitoring query output is organized as a directory structure -- query / query-sub-type / date / timestamp . In case of histogram queries -- the <concept, property> pair / <concept, property1, property2> triples form the sub-types. There are no sub-types for row-count / statistics queries -- so we just use an identifier "ALL".
+
+A sample output can be seen at output/out
+
+9. Output Visualization Console 
+
+Visualization console is located at - http://acr045n01cmp.almaden.ibm.com:88/WCS/Introspection/Code/index1.html 
+
+This provides three options -- look at the output of a query, look at the latest outputs of all queries, compare the output of two runs of the same query.
+
+This is currently under develoment. 
+
+10. Adding more queries
+
+More queries can be added. Please let us know which introspection queries, you would like to have and we can implement those.
